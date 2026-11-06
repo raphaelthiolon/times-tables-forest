@@ -228,16 +228,16 @@
 
     var msg;
     if (!state.diagnosticDone) {
-      msg = 'Hi ' + NAME + '! I’m Hoot, your forest guide. First, a quick scout to see which times tables you already know. No pressure, it’s just to find our starting point.';
+      msg = 'Hi ' + NAME + '! I’m Hoot, guardian of the forest. Your mission: turn the tricky 6, 7, 8 and 9 times tables gold on your map. Every right answer earns stars, and quick answers earn more! First, a quick scout so I know where to start.';
       $('btn-play').textContent = 'Start the Forest Scout';
     } else if (hard === 10) {
       msg = 'Wow, ' + NAME + '! All 10 tricky facts are mastered. You’re a times-tables wizard!';
       $('btn-play').textContent = 'Play';
-    } else if (state.sessions.length === 1) {
-      msg = 'Scout done! I know where to start. Ready for your first quest?';
+    } else if (state.sessions.filter(function (s) { return s.mode === 'play'; }).length === 0) {
+      msg = 'Great scouting, ' + NAME + '! Now the real adventure: win stars with every right answer, and the faster you answer, the more you get. Bonus rounds are worth 25 stars, and 5 right in a row starts a dance party! Ready for your first quest?';
       $('btn-play').textContent = 'Play';
     } else {
-      msg = 'Welcome back, ' + NAME + '! ' + hard + ' of the 10 tricky facts are mastered. Let’s grow more!';
+      msg = 'Welcome back, ' + NAME + '! ' + hard + ' of the 10 tricky facts are gold. Beat your best: every right answer earns stars, and quick ones earn more!';
       $('btn-play').textContent = 'Play';
     }
     $('home-msg').textContent = msg;
