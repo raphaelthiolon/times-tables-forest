@@ -1,0 +1,11 @@
+# Whitelist: publish only the game, the PRD and this README. Everything else stays local.
+*
+!.gitignore
+!README.md
+!PRD.md
+!game/
+!game/**
+
+# Personal-use audio: never publish (copyright). Keep only the explainer.
+game/audio/private/*
+!game/audio/private/README.txt
