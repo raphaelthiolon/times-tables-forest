@@ -257,7 +257,7 @@
     assert(sess.bestStreak === 5);
   });
 
-  test('diagnostic: 16 questions, every hard fact once, starts with two easy facts, no points', function () {
+  test('diagnostic: 16 questions, every hard fact once, starts with two easy facts, flat 10 stars per right answer', function () {
     var s = E.newState(), sess = E.createSession(s, { mode: 'diagnostic', rng: mulberry(4), now: T0 }), q, qs = [];
     while ((q = E.nextQuestion(sess, s))) { qs.push(q); E.submitAnswer(sess, s, q, String(q.a * q.b), 3000); }
     assert(qs.length === 16, 'length ' + qs.length);
@@ -266,7 +266,8 @@
     assert(Object.keys(hardSeen).length === 10);
     Object.keys(hardSeen).forEach(function (k) { assert(hardSeen[k] === 1, k + ' asked ' + hardSeen[k]); });
     assert(!E.isHard(qs[0].key) && !E.isHard(qs[1].key));
-    assert(s.points === 0, 'no points in diagnostic');
+    assert(E.SCOUT_POINTS === 10);
+    assert(s.points === 16 * E.SCOUT_POINTS, 'flat 10 per right answer, got ' + s.points);
     var sum = E.finishSession(sess, s, T0 + 100000);
     assert(s.diagnosticDone === true);
     assert(Object.keys(s.baseline).length === 16);
@@ -526,6 +527,22 @@
     assert(s.bestPoints === undefined || s.bestPoints === 0, 'scout does not set a best');
     playQuest(s, 6, 3, 2500);
     assert(E.leaderboard(s).ranked.length === 1);
+  });
+
+  test('scout stars: flat 10 whatever the speed or streak, 0 for a miss, never negative', function () {
+    var s = E.newState(), sess = E.createSession(s, { mode: 'diagnostic', rng: mulberry(8), now: T0 }), q, i = 0, last = 0, rights = 0;
+    while ((q = E.nextQuestion(sess, s))) {
+      var ok = i % 3 !== 2, ms = [800, 3500, 12000][i % 3];
+      var r = E.submitAnswer(sess, s, q, respond(q, ok), ms);
+      assert(r.points.total === (ok ? 10 : 0), 'q' + i + ' got ' + r.points.total);
+      assert(s.points >= last, 'never drops'); last = s.points;
+      if (ok) rights++;
+      i++;
+    }
+    var sum = E.finishSession(sess, s, T0 + 60000);
+    assert(sum.points === rights * 10 && s.points === rights * 10, 'summary and total match');
+    assert(E.leaderboard(s).ranked.length === 0, 'scout stays off the trophy board');
+    assert(!s.bestPoints, 'scout does not set best quest');
   });
 
   test('migration: old saves get bestPoints 0 and keep their stars', function () {

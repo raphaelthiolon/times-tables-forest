@@ -504,7 +504,7 @@
         $('q-points').textContent = '+' + p.total + ' ⭐' + (bits.length ? '   (' + bits.join(', ') + ')' : '');
         playSfx(p.total >= 20 ? 'bonus' : 'right');
       } else {
-        $('q-points').textContent = pick(CORRECT_MSG);
+        $('q-points').textContent = '+' + r.points.total + ' ⭐  ' + pick(CORRECT_MSG);
         playSfx('right');
       }
       updateHud();
@@ -557,12 +557,12 @@
     $('sum-correct').textContent = s.correct + '/' + s.questions;
     $('sum-points').textContent = s.points;
     $('sum-streak').textContent = s.bestStreak;
-    show($('sum-points-wrap'), !diag);
+    show($('sum-points-wrap'), true);
     $('btn-again').textContent = diag ? 'Start your first quest' : 'Play again';
 
     var msg;
     if (diag) {
-      msg = 'Thanks, ' + NAME + '! Now I know where to start. The tricky ones will show up more, with tricks to help.';
+      msg = 'Thanks, ' + NAME + '! ' + (s.points > 0 ? 'You earned ' + s.points + ' stars, and now ' : 'Now ') + 'I know where to start. In quests, quick answers and streaks earn even more stars!';
     } else if (s.newlyMastered.length) {
       msg = 'You mastered ' + s.newlyMastered.length + ' new fact' + (s.newlyMastered.length > 1 ? 's' : '') + '! That’s real progress, ' + NAME + '.';
     } else if (s.accuracy >= 0.8) {

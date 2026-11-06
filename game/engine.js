@@ -218,6 +218,7 @@
   // ---------- interludes (PRD F24 to F27) ----------
   var INTERLUDE_TYPES = ['firefly', 'spot', 'missing'];
   var INTERLUDE_POINTS = 25;
+  var SCOUT_POINTS = 10;          // flat stars per right answer in the Forest Scout
 
   // Plausible wrong answers: neighbouring products, a tens slip.
   function distractors(a, b, n, rng) {
@@ -368,9 +369,12 @@
       if (session.streak > session.bestStreak) session.bestStreak = session.streak;
       if (!diag) {
         pts = pointsFor({ correct: true, ms: rec.ms, statusBefore: rec.statusBefore, firstTry: firstTry, improved: rec.improved, streak: session.streak });
-        session.points += pts.total;
-        state.points += pts.total;
+      } else {
+        // Scout: flat reward, no speed or streak bonus, so she is never pushed to rush.
+        pts = { total: SCOUT_POINTS, base: SCOUT_POINTS, speed: 0, first: 0, improve: 0, mult: 1 };
       }
+      session.points += pts.total;
+      state.points += pts.total;
     } else {
       session.streak = 0;
       if (!diag) session.retries.push({ key: q.key, due: session.asked + 3 });
@@ -455,7 +459,7 @@
     newState: newState, migrate: migrate, status: status, statusOf: statusOf, hardMasteredCount: hardMasteredCount,
     recordAnswer: recordAnswer, pointsFor: pointsFor, pickNext: pickNext, pickWarmup: pickWarmup,
     diagnosticSet: diagnosticSet, hintFor: hintFor, orient: orient,
-    distractors: distractors, INTERLUDE_TYPES: INTERLUDE_TYPES, INTERLUDE_POINTS: INTERLUDE_POINTS,
+    distractors: distractors, INTERLUDE_TYPES: INTERLUDE_TYPES, INTERLUDE_POINTS: INTERLUDE_POINTS, SCOUT_POINTS: SCOUT_POINTS,
     MUSIC_SWAP_MS: MUSIC_SWAP_MS, trackIndexFor: trackIndexFor, spokenText: spokenText, isDanceBreak: isDanceBreak, CHEERS: CHEERS, cheerLine: cheerLine,
     createSession: createSession, nextQuestion: nextQuestion, submitAnswer: submitAnswer, finishSession: finishSession,
     PRIZES: PRIZES, prizeProgress: prizeProgress, prizesCrossed: prizesCrossed, leaderboard: leaderboard
