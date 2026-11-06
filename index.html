@@ -1,0 +1,188 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0e2a2c">
+<meta name="robots" content="noindex, nofollow">
+<meta name="referrer" content="no-referrer">
+<title>Times Tables Forest</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div class="sky" aria-hidden="true"><div class="moon"></div><div class="fireflies" id="fireflies"></div></div>
+<div class="trees trees-back" aria-hidden="true"></div>
+<div class="trees trees-front" aria-hidden="true"></div>
+
+<main id="app">
+  <header class="topbar">
+    <h1 class="brand">Times Tables Forest</h1>
+    <button id="btn-settings" class="icon-btn" aria-label="Settings">&#9881;</button>
+  </header>
+
+  <!-- HOME -->
+  <section id="screen-home" class="screen" aria-labelledby="home-title">
+    <h2 id="home-title" class="sr-only">Home</h2>
+    <div class="companion">
+      <div class="avatar" aria-hidden="true">&#129417;</div>
+      <p class="bubble" id="home-msg"></p>
+    </div>
+
+    <button id="btn-play" class="btn big">Play</button>
+
+    <div class="stats">
+      <div class="stat"><b id="st-hard">0/10</b><span>tricky facts mastered</span></div>
+      <div class="stat"><b id="st-points">0</b><span>stars</span></div>
+      <div class="stat"><b id="st-sessions">0</b><span>quests</span></div>
+    </div>
+
+    <div class="card prize-card">
+      <h3>Win prizes with your stars</h3>
+      <div id="prize-home"></div>
+      <button id="btn-board" class="btn small ghost" type="button">&#127942; Trophy board</button>
+    </div>
+
+    <div class="card">
+      <h3>Your times-tables map</h3>
+      <div id="grid-home" class="grid" role="img"></div>
+      <ul class="legend">
+        <li><i class="sw sw-mastered"></i>Mastered</li>
+        <li><i class="sw sw-learning"></i>Learning</li>
+        <li><i class="sw sw-weak"></i>New or tricky</li>
+        <li><i class="sw sw-hard"></i>Dotted = the 10 big ones</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- TROPHY BOARD -->
+  <section id="screen-board" class="screen hidden" aria-labelledby="board-title">
+    <h2 id="board-title" class="sum-title">Trophy board</h2>
+    <div class="card prize-card">
+      <h3>Prizes</h3>
+      <p class="prize-intro">Every right answer earns stars, and quick answers earn more. Collect them over many quests and win real prizes!</p>
+      <div id="prize-board"></div>
+    </div>
+    <div class="card">
+      <h3>Best quests</h3>
+      <ol id="board-top" class="board"></ol>
+      <p id="board-empty" class="board-empty">No quests yet. Your first one goes on the board!</p>
+    </div>
+    <div class="card">
+      <h3>All your quests</h3>
+      <ul id="board-history" class="board history"></ul>
+    </div>
+    <button id="btn-board-back" class="btn big">Back to the forest</button>
+  </section>
+
+  <!-- PLAY -->
+  <section id="screen-play" class="screen hidden" aria-label="Quest">
+    <div class="hud">
+      <button id="btn-quit" class="icon-btn" aria-label="Back to the forest">&#8592;</button>
+      <div class="progress" id="progress" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><div id="progress-bar"></div></div>
+      <div class="hud-stat" aria-label="Stars"><span aria-hidden="true">&#11088;</span> <b id="hud-points">0</b></div>
+      <div class="hud-stat" aria-label="Streak"><span aria-hidden="true">&#128293;</span> <b id="hud-streak">0</b></div>
+    </div>
+
+    <div class="qcard" id="qcard">
+      <p id="q-tag" class="tag"></p>
+      <div class="question" aria-live="off">
+        <span id="q-a">0</span><span class="op" aria-hidden="true">&times;</span><span id="q-b">0</span><span class="op" aria-hidden="true">=</span><span id="q-answer" class="answer">?</span>
+      </div>
+      <p id="q-prompt" class="prompt"></p>
+      <p id="q-points" class="pop" aria-hidden="true"></p>
+      <div id="toast" class="toast" role="status"></div>
+    </div>
+
+    <div id="feedback" class="feedback hidden" role="status" aria-live="polite">
+      <div class="avatar sm" aria-hidden="true">&#129417;</div>
+      <div class="fb-body">
+        <p id="fb-text" class="fb-text"></p>
+        <p id="fb-hint" class="fb-hint"></p>
+      </div>
+      <button id="btn-next" class="btn">Next</button>
+    </div>
+
+    <div id="choices" class="choices hidden" role="group" aria-label="Answer choices"></div>
+
+    <div id="pad" class="pad" role="group" aria-label="Number pad">
+      <button data-k="1">1</button><button data-k="2">2</button><button data-k="3">3</button>
+      <button data-k="4">4</button><button data-k="5">5</button><button data-k="6">6</button>
+      <button data-k="7">7</button><button data-k="8">8</button><button data-k="9">9</button>
+      <button data-k="back" class="fn" aria-label="Delete">&#9003;</button>
+      <button data-k="0">0</button>
+      <button data-k="unsure" class="fn small" aria-label="I'm not sure, show me">Not sure</button>
+    </div>
+  </section>
+
+  <!-- SUMMARY -->
+  <section id="screen-summary" class="screen hidden" aria-labelledby="sum-title">
+    <div class="companion">
+      <div class="avatar" aria-hidden="true">&#129417;</div>
+      <p class="bubble" id="sum-msg"></p>
+    </div>
+    <h2 id="sum-title" class="sum-title">Quest complete!</h2>
+    <div class="stats">
+      <div class="stat"><b id="sum-correct">0/0</b><span>correct</span></div>
+      <div class="stat" id="sum-points-wrap"><b id="sum-points">0</b><span>stars earned</span></div>
+      <div class="stat"><b id="sum-streak">0</b><span>best streak</span></div>
+    </div>
+    <div class="card prize-win hidden" id="sum-prize-card"><h3>Prize unlocked!</h3><p id="sum-prize"></p></div>
+    <div class="card" id="sum-rank-card"><h3>Trophy board</h3><p id="sum-rank"></p><div id="prize-sum"></div></div>
+    <div class="card" id="sum-mastered-card"><h3>Newly mastered</h3><p id="sum-mastered"></p></div>
+    <div class="card" id="sum-missed-card"><h3>Let's practise these next</h3><ul id="sum-missed" class="missed"></ul></div>
+    <div class="card"><h3>Your times-tables map</h3><div id="grid-sum" class="grid" role="img"></div></div>
+    <div class="row">
+      <button id="btn-again" class="btn big">Play again</button>
+      <button id="btn-home" class="btn ghost">Back to the forest</button>
+      <button id="btn-board-sum" class="btn ghost">&#127942; Trophy board</button>
+    </div>
+  </section>
+</main>
+
+<!-- SETTINGS -->
+<div id="overlay" class="overlay hidden" role="dialog" aria-modal="true" aria-labelledby="set-title">
+  <div class="sheet">
+    <h2 id="set-title">Settings</h2>
+    <label class="toggle"><input type="checkbox" id="set-sfx"> Sound effects</label>
+    <label class="toggle"><input type="checkbox" id="set-music"> Music (changes every 5 minutes)</label>
+    <label class="toggle"><input type="checkbox" id="set-voice"> Voice (cheers each right answer)</label>
+    <div class="voice-opts">
+      <label for="set-voice-style">Voice style</label>
+      <select id="set-voice-style"></select>
+      <label for="set-voice-name">Voice</label>
+      <select id="set-voice-name"></select>
+      <button id="btn-voice-test" class="btn small ghost" type="button">Hear it</button>
+    </div>
+    <hr>
+    <div id="reset-zone">
+      <button id="btn-reset" class="btn ghost small">Reset progress (grown-ups)</button>
+      <div id="gate" class="gate hidden">
+        <p id="gate-q"></p>
+        <input id="gate-in" inputmode="numeric" autocomplete="off" aria-label="Answer">
+        <button id="gate-ok" class="btn small">OK</button>
+        <p id="gate-msg" class="gate-msg"></p>
+      </div>
+      <div id="confirm" class="gate hidden">
+        <p>This erases all of Ella's progress on this device.</p>
+        <button id="confirm-yes" class="btn small danger">Erase everything</button>
+        <button id="confirm-no" class="btn small ghost">Cancel</button>
+      </div>
+    </div>
+    <button id="btn-close" class="btn">Done</button>
+  </div>
+</div>
+
+<div id="dance" class="dance hidden" role="dialog" aria-label="Dance break">
+  <div class="dance-box">
+    <p class="dance-title">Dance break!</p>
+    <div class="dancers" aria-hidden="true"><span>&#129417;</span><span>&#129418;</span><span>&#128048;</span><span>&#129420;</span></div>
+    <p id="dance-sub" class="dance-sub"></p>
+    <button id="dance-skip" class="btn small ghost">Skip</button>
+  </div>
+</div>
+<div id="fx" class="fx" aria-hidden="true"></div>
+
+<script src="engine.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
