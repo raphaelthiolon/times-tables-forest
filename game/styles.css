@@ -129,6 +129,33 @@ body {
 .stat b { display: block; font-size: 1.6rem; color: var(--gold); }
 .stat span { font-size: .8rem; color: var(--ink-dim); }
 
+/* ---- prizes and trophy board ---- */
+.prize-card .btn { margin-top: 12px; }
+.prize-intro { margin: 0 0 12px; color: var(--ink-dim); }
+.prize { display: flex; gap: 12px; align-items: center; margin: 10px 0; }
+.prize-ico { flex: none; font-size: 2.2rem; width: 48px; text-align: center; }
+.prize-body { flex: 1; min-width: 0; }
+.prize-top { display: flex; justify-content: space-between; gap: 8px; flex-wrap: wrap; font-size: .95rem; }
+.prize-top span { color: var(--ink-dim); font-size: .85rem; }
+.prize.won .prize-top span { color: var(--mint); font-weight: 800; }
+.prize-bar { height: 14px; border-radius: 999px; background: rgba(255, 255, 255, .14); margin-top: 6px; overflow: hidden; }
+.prize-bar div { height: 100%; border-radius: 999px; background: linear-gradient(90deg, var(--mint), var(--gold)); min-width: 6px; }
+.prize-total { margin: 8px 0 0; color: var(--ink-dim); font-size: .9rem; }
+.prize-win { border-color: var(--gold); box-shadow: 0 0 24px rgba(255, 209, 102, .35); }
+.prize-win p { margin: 0; font-weight: 800; font-size: 1.15rem; color: var(--gold); }
+.board { list-style: none; margin: 0; padding: 0; }
+.board li {
+  display: grid; grid-template-columns: 44px 1fr; grid-template-areas: "rk main" "rk sub";
+  column-gap: 10px; padding: 8px 0; border-top: 1px solid var(--glass-line);
+}
+.board li:first-child { border-top: 0; }
+.board .rk { grid-area: rk; align-self: center; text-align: center; font-size: 1.6rem; }
+.board .rk.wide { font-size: .85rem; color: var(--ink-dim); font-weight: 700; }
+.board .bd-main { grid-area: main; font-weight: 800; color: var(--gold); }
+.board .bd-sub { grid-area: sub; font-size: .85rem; color: var(--ink-dim); }
+.board-empty { margin: 0; color: var(--ink-dim); }
+.history { max-height: 360px; overflow-y: auto; }
+
 /* ---- progress grid ---- */
 .grid { display: grid; grid-template-columns: repeat(8, 1fr); gap: 5px; max-width: 420px; margin: 0 auto; }
 .grid .h { text-align: center; font-weight: 800; font-size: .9rem; color: var(--ink-dim); align-self: center; }

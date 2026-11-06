@@ -191,7 +191,7 @@
   })();
 
   // ---------- screens ----------
-  var screens = ['home', 'play', 'summary'];
+  var screens = ['home', 'play', 'summary', 'board'];
   function showScreen(name) {
     screens.forEach(function (n) { show($('screen-' + n), n === name); });
     window.scrollTo(0, 0);
@@ -218,26 +218,101 @@
     el.setAttribute('aria-label', 'Times-tables map. ' + mastered + ' of ' + E.ALL.length + ' facts mastered. ' + E.hardMasteredCount(state) + ' of 10 tricky facts mastered.');
   }
 
+  // ---------- prizes and trophy board ----------
+  function fmt(n) { return String(n).replace(/\B(?=(\d{3})+(?!\d))/g, ','); }
+
+  function renderPrizes(el) {
+    el.textContent = '';
+    var pts = state.points;
+    E.PRIZES.forEach(function (p) {
+      var won = pts >= p.stars;
+      var row = document.createElement('div'); row.className = 'prize' + (won ? ' won' : '');
+      var ico = document.createElement('span'); ico.className = 'prize-ico'; ico.setAttribute('aria-hidden', 'true'); ico.textContent = p.emoji;
+      var body = document.createElement('div'); body.className = 'prize-body';
+      var top = document.createElement('div'); top.className = 'prize-top';
+      var nm = document.createElement('b'); nm.textContent = fmt(p.stars) + ' stars = ' + (p.name === 'Bubble tea' ? 'a bubble tea' : 'a big surprise');
+      var st = document.createElement('span');
+      st.textContent = won ? 'Won! Tell a grown-up' : fmt(p.stars - pts) + ' to go';
+      top.appendChild(nm); top.appendChild(st);
+      var bar = document.createElement('div'); bar.className = 'prize-bar';
+      bar.setAttribute('role', 'progressbar'); bar.setAttribute('aria-valuemin', '0'); bar.setAttribute('aria-valuemax', String(p.stars));
+      bar.setAttribute('aria-valuenow', String(Math.min(pts, p.stars)));
+      bar.setAttribute('aria-label', p.name + ' progress');
+      var fill = document.createElement('div'); fill.style.width = Math.round(Math.min(1, pts / p.stars) * 100) + '%';
+      bar.appendChild(fill);
+      body.appendChild(top); body.appendChild(bar);
+      row.appendChild(ico); row.appendChild(body);
+      el.appendChild(row);
+    });
+    var tot = document.createElement('p'); tot.className = 'prize-total';
+    tot.textContent = 'You have ' + fmt(pts) + ' stars so far.';
+    el.appendChild(tot);
+  }
+
+  function niceDate(ds) {
+    var p = String(ds).split('-');
+    if (p.length !== 3) return ds;
+    var M = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    return Number(p[2]) + ' ' + (M[Number(p[1]) - 1] || '');
+  }
+
+  function renderBoard() {
+    renderPrizes($('prize-board'));
+    var lb = E.leaderboard(state);
+    var medals = ['🥇', '🥈', '🥉'];
+    var top = $('board-top'); top.textContent = '';
+    lb.ranked.slice(0, 5).forEach(function (r, i) {
+      var li = document.createElement('li');
+      var rk = document.createElement('span'); rk.className = 'rk'; rk.textContent = medals[i] || String(r.rank);
+      var main = document.createElement('span'); main.className = 'bd-main';
+      main.textContent = fmt(r.pts) + ' stars';
+      var sub = document.createElement('span'); sub.className = 'bd-sub';
+      sub.textContent = niceDate(r.date) + ' · ' + r.c + '/' + r.q + ' right · streak ' + r.bs;
+      li.appendChild(rk); li.appendChild(main); li.appendChild(sub);
+      top.appendChild(li);
+    });
+    show($('board-empty'), lb.ranked.length === 0);
+    show(top, lb.ranked.length > 0);
+
+    var hist = $('board-history'); hist.textContent = '';
+    lb.history.forEach(function (r) {
+      var li = document.createElement('li');
+      var d = document.createElement('span'); d.className = 'rk wide'; d.textContent = niceDate(r.date);
+      var main = document.createElement('span'); main.className = 'bd-main';
+      main.textContent = fmt(r.pts) + ' stars' + (r.rank === 1 ? ' · best!' : '');
+      var sub = document.createElement('span'); sub.className = 'bd-sub';
+      sub.textContent = r.c + '/' + r.q + ' right · streak ' + r.bs;
+      li.appendChild(d); li.appendChild(main); li.appendChild(sub);
+      hist.appendChild(li);
+    });
+    show(hist.parentNode, lb.history.length > 0);
+  }
+  function openBoard() { renderBoard(); showScreen('board'); }
+
   // ---------- home ----------
   function renderHome() {
     var hard = E.hardMasteredCount(state);
     $('st-hard').textContent = hard + '/10';
-    $('st-points').textContent = state.points;
+    $('st-points').textContent = fmt(state.points);
     $('st-sessions').textContent = state.sessions.filter(function (s) { return s.mode === 'play'; }).length;
     renderGrid($('grid-home'));
+    renderPrizes($('prize-home'));
+    var pp = E.prizeProgress(state.points);
 
     var msg;
     if (!state.diagnosticDone) {
-      msg = 'Hi ' + NAME + '! I’m Hoot, guardian of the forest. Your mission: turn the tricky 6, 7, 8 and 9 times tables gold on your map. Every right answer earns stars, and quick answers earn more! First, a quick scout so I know where to start.';
+      msg = 'Hi ' + NAME + '! I’m Hoot, guardian of the forest. Your mission: turn the tricky 6, 7, 8 and 9 times tables gold on your map. Every right answer earns stars, and quick answers earn more. Collect 1,000 stars for a bubble tea, and 10,000 for a big surprise! First, a quick scout so I know where to start.';
       $('btn-play').textContent = 'Start the Forest Scout';
     } else if (hard === 10) {
       msg = 'Wow, ' + NAME + '! All 10 tricky facts are mastered. You’re a times-tables wizard!';
       $('btn-play').textContent = 'Play';
     } else if (state.sessions.filter(function (s) { return s.mode === 'play'; }).length === 0) {
-      msg = 'Great scouting, ' + NAME + '! Now the real adventure: win stars with every right answer, and the faster you answer, the more you get. Bonus rounds are worth 25 stars, and 5 right in a row starts a dance party! Ready for your first quest?';
+      msg = 'Great scouting, ' + NAME + '! Now the real adventure: win stars with every right answer, and the faster you answer, the more you get. 1,000 stars wins a bubble tea, and 10,000 stars a big surprise! Ready for your first quest?';
       $('btn-play').textContent = 'Play';
     } else {
-      msg = 'Welcome back, ' + NAME + '! ' + hard + ' of the 10 tricky facts are gold. Beat your best: every right answer earns stars, and quick ones earn more!';
+      msg = 'Welcome back, ' + NAME + '! ' + hard + ' of the 10 tricky facts are gold. ' +
+        (pp.next ? fmt(pp.remaining) + ' more stars to win ' + (pp.next.name === 'Bubble tea' ? 'your bubble tea' : 'the big surprise') + '. Beat your best!'
+                 : 'You have won every prize! Keep playing to beat your best.');
       $('btn-play').textContent = 'Play';
     }
     $('home-msg').textContent = msg;
@@ -460,9 +535,15 @@
     stopTimers();
     playSfx('done');
     renderSummary(s);
+    var won = s.mode === 'play' ? E.prizesCrossed(state.points - s.points, state.points) : [];
+    show($('sum-prize-card'), won.length > 0);
+    if (won.length) {
+      $('sum-prize').textContent = won.map(function (p) { return p.emoji + ' ' + fmt(p.stars) + ' stars: ' + (p.name === 'Bubble tea' ? 'you won a bubble tea!' : 'you won the big surprise!'); }).join('  ') + ' Tell a grown-up!';
+    }
     sess = null; q = null;
     showScreen('summary');
-    if (s.mode === 'play' && (s.accuracy >= 0.8 || s.newlyMastered.length)) {
+    if (won.length) { burst(70, LEAVES); }
+    else if (s.mode === 'play' && (s.accuracy >= 0.8 || s.newlyMastered.length)) {
       burst(48, LEAVES);
       var av = document.querySelector('#screen-summary .avatar');
       av.classList.remove('hop'); void av.offsetWidth; av.classList.add('hop');
@@ -490,6 +571,19 @@
       msg = 'Good effort, ' + NAME + '! The tricky ones are getting friendlier each time.';
     }
     $('sum-msg').textContent = msg;
+
+    show($('sum-rank-card'), !diag);
+    if (!diag) {
+      var lb = E.leaderboard(state), last = lb.history[0];
+      var rankMsg = '';
+      if (last) {
+        if (lb.ranked.length > 1 && last.rank === 1) rankMsg = 'New best quest: ' + fmt(last.pts) + ' stars! You are number 1 on the board.';
+        else if (lb.ranked.length > 1) rankMsg = 'This quest is number ' + last.rank + ' of ' + lb.ranked.length + '. Best so far: ' + fmt(lb.ranked[0].pts) + ' stars.';
+        else rankMsg = 'Your first quest is on the board: ' + fmt(last.pts) + ' stars. Can you beat it?';
+      }
+      $('sum-rank').textContent = rankMsg;
+      renderPrizes($('prize-sum'));
+    }
 
     show($('sum-mastered-card'), s.newlyMastered.length > 0);
     $('sum-mastered').textContent = s.newlyMastered.map(function (k) { return times(k); }).join('   •   ');
@@ -537,6 +631,9 @@
   $('btn-play').addEventListener('click', function () { startSession(state.diagnosticDone ? 'play' : 'diagnostic'); });
   $('btn-again').addEventListener('click', function () { startSession('play'); });
   $('btn-home').addEventListener('click', function () { renderHome(); showScreen('home'); });
+  $('btn-board').addEventListener('click', openBoard);
+  $('btn-board-sum').addEventListener('click', openBoard);
+  $('btn-board-back').addEventListener('click', function () { renderHome(); showScreen('home'); });
   $('btn-quit').addEventListener('click', leaveToHome);
   $('btn-next').addEventListener('click', nextQuestion);
   $('dance-skip').addEventListener('click', endDance);

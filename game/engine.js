@@ -62,6 +62,7 @@
     raw.sessions = raw.sessions || [];
     raw.baseline = raw.baseline || {};
     raw.points = raw.points || 0;
+    raw.bestPoints = raw.bestPoints || 0;
     return raw;
   }
 
@@ -407,11 +408,45 @@
     if (res.length) {
       state.sessions.push({
         date: dateStr(session.now), ms: Math.max(0, (endMs || Date.now()) - session.now),
-        q: res.length, c: correct, mode: session.mode
+        q: res.length, c: correct, mode: session.mode,
+        pts: session.points, bs: session.bestStreak
       });
       if (state.sessions.length > 100) state.sessions.shift();
+      if (session.mode === 'play' && session.points > (state.bestPoints || 0)) state.bestPoints = session.points;
     }
     return summary;
+  }
+
+  // ---------- prizes and leaderboard ----------
+  var PRIZES = [
+    { stars: 1000, name: 'Bubble tea', emoji: '🧋' },
+    { stars: 10000, name: 'Big surprise', emoji: '🎁' }
+  ];
+  // Where the star total stands against the prizes.
+  function prizeProgress(points) {
+    var reached = PRIZES.filter(function (p) { return points >= p.stars; });
+    var next = PRIZES.filter(function (p) { return points < p.stars; })[0] || null;
+    var prev = reached.length ? reached[reached.length - 1].stars : 0;
+    return {
+      reached: reached, next: next,
+      remaining: next ? next.stars - points : 0,
+      pct: next ? Math.max(0, Math.min(1, (points - prev) / (next.stars - prev))) : 1
+    };
+  }
+  // Prizes crossed between two star totals (for the "you won!" moment).
+  function prizesCrossed(before, after) {
+    return PRIZES.filter(function (p) { return before < p.stars && after >= p.stars; });
+  }
+  // Quests (play mode, with a saved star count), best first; ties go to the newest.
+  function leaderboard(state) {
+    var rows = [];
+    state.sessions.forEach(function (s, i) {
+      if (s.mode === 'play' && typeof s.pts === 'number') rows.push({ date: s.date, pts: s.pts, q: s.q, c: s.c, bs: s.bs || 0, idx: i });
+    });
+    var byIdx = rows.slice();
+    rows.sort(function (x, y) { return y.pts - x.pts || y.idx - x.idx; });
+    rows.forEach(function (r, i) { r.rank = i + 1; });
+    return { ranked: rows, history: byIdx.reverse() };
   }
 
   return {
@@ -422,6 +457,7 @@
     diagnosticSet: diagnosticSet, hintFor: hintFor, orient: orient,
     distractors: distractors, INTERLUDE_TYPES: INTERLUDE_TYPES, INTERLUDE_POINTS: INTERLUDE_POINTS,
     MUSIC_SWAP_MS: MUSIC_SWAP_MS, trackIndexFor: trackIndexFor, spokenText: spokenText, isDanceBreak: isDanceBreak, CHEERS: CHEERS, cheerLine: cheerLine,
-    createSession: createSession, nextQuestion: nextQuestion, submitAnswer: submitAnswer, finishSession: finishSession
+    createSession: createSession, nextQuestion: nextQuestion, submitAnswer: submitAnswer, finishSession: finishSession,
+    PRIZES: PRIZES, prizeProgress: prizeProgress, prizesCrossed: prizesCrossed, leaderboard: leaderboard
   };
 });

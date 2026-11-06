@@ -34,6 +34,12 @@
       <div class="stat"><b id="st-sessions">0</b><span>quests</span></div>
     </div>
 
+    <div class="card prize-card">
+      <h3>Win prizes with your stars</h3>
+      <div id="prize-home"></div>
+      <button id="btn-board" class="btn small ghost" type="button">&#127942; Trophy board</button>
+    </div>
+
     <div class="card">
       <h3>Your times-tables map</h3>
       <div id="grid-home" class="grid" role="img"></div>
@@ -44,6 +50,26 @@
         <li><i class="sw sw-hard"></i>Dotted = the 10 big ones</li>
       </ul>
     </div>
+  </section>
+
+  <!-- TROPHY BOARD -->
+  <section id="screen-board" class="screen hidden" aria-labelledby="board-title">
+    <h2 id="board-title" class="sum-title">Trophy board</h2>
+    <div class="card prize-card">
+      <h3>Prizes</h3>
+      <p class="prize-intro">Every right answer earns stars, and quick answers earn more. Collect them over many quests and win real prizes!</p>
+      <div id="prize-board"></div>
+    </div>
+    <div class="card">
+      <h3>Best quests</h3>
+      <ol id="board-top" class="board"></ol>
+      <p id="board-empty" class="board-empty">No quests yet. Your first one goes on the board!</p>
+    </div>
+    <div class="card">
+      <h3>All your quests</h3>
+      <ul id="board-history" class="board history"></ul>
+    </div>
+    <button id="btn-board-back" class="btn big">Back to the forest</button>
   </section>
 
   <!-- PLAY -->
@@ -98,12 +124,15 @@
       <div class="stat" id="sum-points-wrap"><b id="sum-points">0</b><span>stars earned</span></div>
       <div class="stat"><b id="sum-streak">0</b><span>best streak</span></div>
     </div>
+    <div class="card prize-win hidden" id="sum-prize-card"><h3>Prize unlocked!</h3><p id="sum-prize"></p></div>
+    <div class="card" id="sum-rank-card"><h3>Trophy board</h3><p id="sum-rank"></p><div id="prize-sum"></div></div>
     <div class="card" id="sum-mastered-card"><h3>Newly mastered</h3><p id="sum-mastered"></p></div>
     <div class="card" id="sum-missed-card"><h3>Let's practise these next</h3><ul id="sum-missed" class="missed"></ul></div>
     <div class="card"><h3>Your times-tables map</h3><div id="grid-sum" class="grid" role="img"></div></div>
     <div class="row">
       <button id="btn-again" class="btn big">Play again</button>
       <button id="btn-home" class="btn ghost">Back to the forest</button>
+      <button id="btn-board-sum" class="btn ghost">&#127942; Trophy board</button>
     </div>
   </section>
 </main>

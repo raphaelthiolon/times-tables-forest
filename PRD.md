@@ -145,6 +145,18 @@ Ask: more interactive and fun, with animation on good scores and a different kin
 **Voice limit.** The browser's built-in voices are robotic compared with a human child. Raising pitch and speed makes them sound younger and more excited, but a truly child-like voice needs recorded audio (for example Raphael recording the lines with Ella) or an online voice service, which would send data off the device. `[TO CONFIRM]` if wanted.
 | F30 | Dance break on every 5th right answer in a row (quests only): overlay with the characters dancing and an original jingle, skippable | M | Fires at streaks 5, 10, 15 and never on a miss or in the scout (tested); tap or Skip to continue |
 
+### 7.7 Prizes and trophy board (added 2026-11-06, from Raphael's feedback)
+Ask: a leaderboard with the history of previous games and scores, explaining that 1,000 stars wins a bubble tea and 10,000 stars a big surprise.
+
+| ID | Requirement | Pri | Acceptance criteria |
+|---|---|---|---|
+| F32 | Real-world prizes tied to the lifetime star total: **1,000 stars = bubble tea, 10,000 stars = big surprise**. Progress bars on the home screen, the trophy board and the quest summary; the first-launch and post-scout messages from Hoot explain both prizes; the welcome-back message says how many stars remain | M | Thresholds, remaining count and bar percentage unit-tested; crossing a threshold during a quest shows a "Prize unlocked" card and a leaf burst once, never again for the same prize. The prize is handed over by a grown-up, outside the game |
+| F33 | Trophy board: the 5 best quests (medals for the top 3) and the full quest history, newest first (date, stars, right answers, best streak). Scout rounds and old saves without a star count are excluded. The summary tells her where the quest ranked | M | Ranking best-first, ties to the newest, history newest-first, lifetime stars equal the sum of quest stars (all unit-tested). Kept on the device; the last 100 quests are stored |
+
+**Pacing (measured, not promised).** A fast, accurate quest of 15 questions earns about 455 stars in simulation (about 2.5 s per answer, no misses). The bubble tea then takes 3 quests at best and probably 4 to 6 in real play. The big surprise takes about 22 perfect quests and likely 35 to 45 real ones. `[TO CONFIRM]` against Ella's real scores after the first week; the thresholds are one constant each (`PRIZES` in `engine.js`).
+
+**Guardrail.** Stars come only from right answers and never decrease, so the board cannot punish her. The reset in settings erases the star total and the board together.
+
 **Decision (2026-11-06): no Taylor Swift songs.** Her recordings and lyrics are copyrighted, and the game's safety rule is no external links or streaming. The dance break uses an original jingle instead. Option for later: Raphael places his own licensed audio clip in the game folder for private use on his own devices. It must not go on a public host. `[TO CONFIRM]`
 
 ## 8. Game and content design
@@ -274,6 +286,7 @@ Each phase ends with Ella playtesting and my feedback in a batch before the next
 | F28 music rotation | Built, rotation tested | Four tracks; not listened to |
 | F29 voice | Built | Spoken sentences tested; checked that the browser is asked to say them; not listened to |
 | F30 dance break | Built, tested | Shown in the browser at streak 5; Skip works |
+| F32, F33 prizes and trophy board | Built, tested (43 of 43 tests pass) | Prize bars, trophy board screen, rank on the summary, prize-unlocked card. Checked at phone width with seeded history and a full scripted quest that crossed 1,000 stars |
 | Not built yet | | F4, F9, F11 to F17, F19, F23, L6 visual model, offline service worker, boss battles |
 
 **Deviations from the spec**
