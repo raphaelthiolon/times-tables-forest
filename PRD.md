@@ -274,7 +274,7 @@ Each phase ends with Ella playtesting and my feedback in a batch before the next
 | F2 generator and checker | Built, tested | 22 automated tests pass, including all 49 products in both orders and the full 1x1 to 10x10 grid |
 | F3 wrong-answer handling | Built, tested | Answer shown, hint shown, fact returns within 5 questions |
 | F5 session structure | Partly | Warm-up (3), main set (15 in total), summary. No boss or finale yet (Phase 2) |
-| F6 diagnostic | Built | 16 questions: all 10 hard facts once plus 6 easy ones; no points; sets starting levels |
+| F6 diagnostic | Built | 16 questions: all 10 hard facts once plus 6 easy ones; sets starting levels. **Changed 2026-11-06:** a flat 10 stars per right answer (no speed or streak bonus, so no pressure to rush; max 160). Before, it gave none, which contradicted Hoot's "every right answer earns stars" on her very first round. Scout stays off the trophy board |
 | F7, F8 adaptive engine | Built, tested | Per-fact score; ~70/20/10 selection verified by simulation; no back-to-back repeats |
 | F10 points | Built, tested | Base, speed, first-try, improvement, streak multiplier; points never decrease |
 | F18 progress grid | Built | 7x7 map with colour and tick; dotted outline marks the 10 hard facts |
